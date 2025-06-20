@@ -1,0 +1,79 @@
+## Pagination Usage Guide
+
+This guide explains how to use the custom pagination style in your Laravel Ecommerce application.
+
+### Server-side Pagination (Laravel)
+
+1. In your controller, when you fetch data that needs pagination:
+
+```php
+// Example in a ProductController
+public function index()
+{
+    $products = Product::where('status', 'active')
+                ->orderBy('created_at', 'desc')
+                ->paginate(12); // 12 products per page
+                
+    return view('frontend.products.index', compact('products'));
+}
+```
+
+2. In your Blade template, use the custom pagination view:
+
+```blade
+<div class="product-listings">
+    {{-- Your product listing code here --}}
+    
+    @if($products->count() > 0)
+        @foreach($products as $product)
+            {{-- Display each product --}}
+        @endforeach
+        
+        <!-- Pagination links with custom styling -->
+        {{ $products->links('vendor.pagination.custom') }}
+    @else
+        <p>No products found.</p>
+    @endif
+</div>
+```
+
+### Client-side Pagination (JavaScript)
+
+For pages where you want to implement client-side pagination (no page reload):
+
+1. Make sure your content is in a container with items that can be paginated:
+
+```blade
+<div class="my-content-container">
+    @foreach($items as $item)
+        <div class="paginated-item">
+            {{-- Item content --}}
+        </div>
+    @endforeach
+</div>
+```
+
+2. Initialize the pagination with JavaScript:
+
+```javascript
+$(document).ready(function() {
+    // Container selector, item selector, items per page
+    initPagination('.my-content-container', '.paginated-item', 5);
+});
+```
+
+### Customizing Pagination
+
+If you need to adjust the styling of pagination:
+1. Edit the CSS in resources/views/frontend/index.blade.php under the `@push('styles')` section
+2. The custom paginator template is at resources/views/vendor/pagination/custom.blade.php
+
+### Navigation-only Pagination
+
+If you only want Previous/Next buttons without page numbers:
+
+```blade
+{{ $items->onEachSide(0)->links('vendor.pagination.simple-custom') }}
+```
+
+Note: You'll need to create the simple-custom.blade.php template in the vendor/pagination directory.
